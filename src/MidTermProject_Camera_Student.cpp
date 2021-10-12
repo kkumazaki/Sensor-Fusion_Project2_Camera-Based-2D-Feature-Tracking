@@ -38,6 +38,7 @@ int main(int argc, const char *argv[])
     // misc
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
+    //bool bVis = true;            // visualize results (Debug)
     bool bVis = false;            // visualize results
 
     /* MAIN LOOP OVER ALL IMAGES */
@@ -58,11 +59,22 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.1 -> replace the following code with ring buffer of size dataBufferSize
+        cout << "-----imgIndex: " << imgIndex << "-----" << endl;
 
         // push image into data frame buffer
         DataFrame frame;
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
+
+        int dataSize = dataBuffer.size();
+
+        if (dataSize > dataBufferSize){
+            dataBuffer.erase(dataBuffer.begin()); // There's no methos "pop_front"
+            dataBuffer.shrink_to_fit(); // Release memory
+        }
+
+        cout << "dataBuffer size: " << dataBuffer.size() << endl;
+        //cout << "dataBuffer capacity: " << dataBuffer.capacity() << endl;
 
         //// EOF STUDENT ASSIGNMENT
         cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
@@ -71,36 +83,72 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI";
+        string detectorType = "SIFT";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT
+        //string detectorType = "HARRIS";  // Task MP.2 Another slow method: HARRIS
+        //string detectorType = "SHITOMASI";  // This should be changed in Task MP.2
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
-        if (detectorType.compare("SHITOMASI") == 0)
-        {
-            detKeypointsShiTomasi(keypoints, imgGray, false);
+        if (detectorType.compare("SHITOMASI") == 0) {
+            detKeypointsShiTomasi(keypoints, imgGray, bVis);
+            //detKeypointsShiTomasi(keypoints, imgGray, false);
         }
-        else
-        {
-            //...
+        else if (detectorType.compare("HARRIS") == 0) {
+            detKeypointsHarris(keypoints, imgGray, bVis);
+            //detKeypointsHarris(keypoints, imgGray, false);
+        }
+        else {
+            detKeypointsModern(keypoints, imgGray, detectorType, bVis);
+            //detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
-
-        // only keep keypoints on the preceding vehicle
+        // Use it only in this project
         bool bFocusOnVehicle = true;
-        cv::Rect vehicleRect(535, 180, 180, 150);
+        vector<float> vehicleRect{535, 180, 180, 150}; // Roughly define rectangle area.
+        //cv::Rect vehicleRect(535, 180, 180, 150); // Roughly define rectangle area.
+        vector<cv::KeyPoint> keypointsCropped; // create empty feature list for after cropping
+        int keypointSize = keypoints.size();
+
         if (bFocusOnVehicle)
         {
-            // ...
-        }
+            /*
+            // (i) push back
+            for (int i = 0; i < keypointSize; i++){
+                if ((keypoints[i].pt.x > vehicleRect[0]) && (keypoints[i].pt.x < (vehicleRect[0]+vehicleRect[2])) &&
+                    (keypoints[i].pt.y > vehicleRect[1]) && (keypoints[i].pt.y < (vehicleRect[1]+vehicleRect[3]))) {
+                        keypointsCropped.push_back(keypoints[i]);
+                        cout << "cropped keypoints[" << i << "]: x=" << keypoints[i].pt.x << ", y=" << keypoints[i].pt.y << endl;
+                }
+            }
+            */
+           // (ii) erase (be careful about for iteration!)
+            for (int i = keypointSize; i > 0; i--){
+                if ((keypoints[i].pt.x < vehicleRect[0]) || (keypoints[i].pt.x > (vehicleRect[0]+vehicleRect[2])) ||
+                    (keypoints[i].pt.y < vehicleRect[1]) || (keypoints[i].pt.y > (vehicleRect[1]+vehicleRect[3]))) {
+                        keypoints.erase(keypoints.begin() + i);
+                        //cout << "cropped keypoints[" << i << "]: x=" << keypoints[i].pt.x << ", y=" << keypoints[i].pt.y << endl;
+                }
+            }
 
+            if (bVis == true) {
+                cv::Mat visImage = img.clone();
+                //cv::drawKeypoints(img, keypointsCropped, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                string windowName = detectorType + " Detector Results after Cropping"; 
+                cv::namedWindow(windowName, 6);
+                imshow(windowName, visImage);
+                cv::waitKey(0);
+            }
+        }
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
+        // dont't set true except for debugging
         bool bLimitKpts = false;
         if (bLimitKpts)
         {
@@ -125,7 +173,8 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        string descriptorType = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK
+        //string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
@@ -141,8 +190,11 @@ int main(int argc, const char *argv[])
 
             vector<cv::DMatch> matches;
             string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            //string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            //string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+            string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
+            //string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
