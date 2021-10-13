@@ -21,7 +21,9 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
         // Reference: Udacity Lesson solution
-        if (descSource.type() != CV_32F)
+        // Solution by the past mentor: https://knowledge.udacity.com/questions/211123
+        if (descSource.type() != CV_32F || descRef.type() != CV_32F)
+        //if (descSource.type() != CV_32F)
         { // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
             descSource.convertTo(descSource, CV_32F);
             descRef.convertTo(descRef, CV_32F);
@@ -292,7 +294,7 @@ void detKeypointsModern(vector<cv::KeyPoint> &keypoints, cv::Mat &img, string de
     double t = (double)cv::getTickCount();
     detector->detect(img, keypoints);
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << detectorType << " with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << detectorType << " detector with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
     // visualize results
     if (bVis) {

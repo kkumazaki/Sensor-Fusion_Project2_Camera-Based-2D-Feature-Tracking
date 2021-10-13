@@ -41,6 +41,14 @@ int main(int argc, const char *argv[])
     //bool bVis = true;            // visualize results (Debug)
     bool bVis = false;            // visualize results
 
+    // Change the location for efficiency
+    string detectorType = "FAST";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT
+    string descriptorType = "BRIEF"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK
+    
+    // Task MP.7,8,9: Saving logs 
+    string filename = "../result/detector_" + detectorType + "_descripter_" + descriptorType + ".txt";
+    ofstream outputfile1(filename);
+
     /* MAIN LOOP OVER ALL IMAGES */
 
     for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex++)
@@ -73,7 +81,8 @@ int main(int argc, const char *argv[])
             dataBuffer.shrink_to_fit(); // Release memory
         }
 
-        cout << "dataBuffer size: " << dataBuffer.size() << endl;
+        // Debug
+        //cout << "dataBuffer size: " << dataBuffer.size() << endl;
         //cout << "dataBuffer capacity: " << dataBuffer.capacity() << endl;
 
         //// EOF STUDENT ASSIGNMENT
@@ -83,13 +92,17 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SIFT";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT
+        // Change the location of detectorType for efficiency
+        //string detectorType = "FAST";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT
         //string detectorType = "HARRIS";  // Task MP.2 Another slow method: HARRIS
         //string detectorType = "SHITOMASI";  // This should be changed in Task MP.2
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+
+        // Calculate time for logging in main function
+        double t1 = (double)cv::getTickCount();
 
         if (detectorType.compare("SHITOMASI") == 0) {
             detKeypointsShiTomasi(keypoints, imgGray, bVis);
@@ -104,6 +117,13 @@ int main(int argc, const char *argv[])
             //detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
         //// EOF STUDENT ASSIGNMENT
+
+        // Task MP.7,8,9: Saving logs 
+        t1 = ((double)cv::getTickCount() - t1) / cv::getTickFrequency();
+        outputfile1 << "-----imgIndex: ";
+        outputfile1 << imgIndex << endl;
+        outputfile1 << "time of detection: ";
+        outputfile1 << t1 * 1000 / 1.0 << endl;
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
@@ -147,6 +167,10 @@ int main(int argc, const char *argv[])
         }
         //// EOF STUDENT ASSIGNMENT
 
+        // Task MP.7,8,9: Saving logs 
+        outputfile1 << "keypoints on the preceding vehicle: ";
+        outputfile1 << keypoints.size() << endl;
+
         // optional : limit number of keypoints (helpful for debugging and learning)
         // dont't set true except for debugging
         bool bLimitKpts = false;
@@ -172,11 +196,20 @@ int main(int argc, const char *argv[])
         //// TASK MP.4 -> add the following descriptors in file matching2D.cpp and enable string-based selection based on descriptorType
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
+        // Calculate time for logging in main function
+        double t2 = (double)cv::getTickCount();
+
         cv::Mat descriptors;
-        string descriptorType = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK
+        // Change the location of descriptorType for efficiency
+        //string descriptorType = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK
         //string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
+
+        // Task MP.7,8,9: Saving logs 
+        t2 = ((double)cv::getTickCount() - t2) / cv::getTickFrequency();
+        outputfile1 << "time of description: ";
+        outputfile1 << t2 * 1000 / 1.0 << endl;
 
         // push descriptors for current frame to end of data buffer
         (dataBuffer.end() - 1)->descriptors = descriptors;
@@ -189,7 +222,7 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
             //string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
             //string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
@@ -200,11 +233,21 @@ int main(int argc, const char *argv[])
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
             //// TASK MP.6 -> add KNN match selection and perform descriptor distance ratio filtering with t=0.8 in file matching2D.cpp
 
+            // Calculate time for logging in main function
+            double t3 = (double)cv::getTickCount();
+
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
                              matches, descriptorType, matcherType, selectorType);
 
             //// EOF STUDENT ASSIGNMENT
+
+            // Task MP.7,8,9: Saving logs 
+            t3 = ((double)cv::getTickCount() - t3) / cv::getTickFrequency();
+            outputfile1 << "time of matching: ";
+            outputfile1 << t3 * 1000 / 1.0 << endl;
+            outputfile1 << "Matched keypoints: ";
+            outputfile1 << matches.size() << endl;
 
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
@@ -232,6 +275,9 @@ int main(int argc, const char *argv[])
         }
 
     } // eof loop over all images
+
+    // Task MP.7,8,9: Saving logs 
+    outputfile1.close();
 
     return 0;
 }

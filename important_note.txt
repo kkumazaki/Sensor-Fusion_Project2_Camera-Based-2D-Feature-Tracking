@@ -1,0 +1,28 @@
+[MP.2: detector]
+There's an error only with SIFT.
+
+-->
+SIFT detector works well only with SIFT descriptor.
+https://knowledge.udacity.com/questions/323235
+
+
+[MP.4: descriptor]
+There're are errors only with SIFT and AKAZE.
+
+-->
+AKAZE descriptor works well only with AKAZE detector.
+(AKAZE detector can work with other descriptors)
+https://knowledge.udacity.com/questions/163998
+
+[MP.5 matcher]
+There's an error only with FLANN. At the first time it looks OK.
+However once I click, the second result has an error and the picture disappears.
+
+--> 
+FLANN has a bug. Need to add a condition in if sentense.
+https://knowledge.udacity.com/questions/211123
+
+
+
+*1: Udacity should notice the students that errors with some combinations are OK.
+*2: Udacity should modify the model code in MP.5.
