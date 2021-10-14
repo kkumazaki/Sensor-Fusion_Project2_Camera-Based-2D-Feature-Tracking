@@ -21,19 +21,17 @@ I focused on loading images, setting up data structures and putting everything i
 There are 9 Tasks in this project.
 ### (1)The Data Buffer 
 ### Task MP.1
-I focused on loading images, setting up data structures and putting everything into a ring buffer to optimize memory load. I modified “MidTermProject_Camera_Student.cpp” as following.
+I focused on loading images, setting up data structures and putting everything into a ring buffer to optimize memory load. 
 
 ### (2)Keypoint Detection
 ### Task MP.2
 My second task is to focus on keypoint detection. 
 In the student version of the code there’s already an existing implementation of the Shi-Tomasi detector. 
-I implemented a selection of alternative detectors, which are HARRIS, FAST, BRISK, ORB, AKAZE, and SIFT
-in “matching2D_Student.cpp” as following.
+I implemented a selection of alternative detectors, which are HARRIS, FAST, BRISK, ORB, AKAZE, and SIFT.
 
 ### Task MP.3
 My third task is to remove all keypoints outside of a bounding box around the preceding vehicle. 
 Box parameters you should use are : cx = 535, cy = 180, w = 180, h = 150.
-I implemented it in “MidTermProject_Camera_Student.cpp” as following.
 
 ### (3)Descriptor Extraction & Matching
 ### Task MP.4
@@ -72,7 +70,7 @@ Finally, in a short text, I justify my recommendation based on my observations a
 
 The result is in the list "result/Project2_result.xlsx".
 
-The time of ORB detector is short (A), but keypoints of ORB are not stable as I wrote in Task MP.7.
+The time of ORB detector is short, but keypoints of ORB are not stable as I wrote in Task MP.7.
 Besides ORB, the TOP 3 fast methods are following.   
 (1) FAST detector & ORB descriptor: average 2.6 msec, standard deviation: 0.6 msec  
 (2) FAST detector & BRIEF descriptor: average 3.3 msec, standard deviation: 3.7 msec  
