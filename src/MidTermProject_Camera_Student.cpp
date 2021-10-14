@@ -42,9 +42,15 @@ int main(int argc, const char *argv[])
     bool bVis = false;            // visualize results
 
     // Change the location for efficiency
-    string detectorType = "FAST";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT
-    string descriptorType = "BRIEF"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK
-    
+    string detectorType = "FAST";  // Task MP.2 Modern fast methods: FAST, BRISK, ORB, AKAZE, SIFT // SIFT detector is only good with SIFT descriptor
+    string descriptorType = "ORB"; // BRIEF, ORB, FREAK, AKAZE, SIFT, BRISK // SIFT/AKAZE descriptor is only good with SIFT/AKAZE detector (AKAZE detector is good with other descriptors)
+    string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN // Basically use BF because it's assigned in Lesson instruction
+    // Change the string name to avoid duplication
+    string descType = "DES_BINARY"; // DES_BINARY, DES_HOG // Basically use BINARY because it's faster
+    //string descType = "DES_HOG"; // DES_BINARY, DES_HOG // Only use HOG with SIFT
+    string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN // Use KNN with minDescDistRatio: 0.8
+
+
     // Task MP.7,8,9: Saving logs 
     string filename = "../result/detector_" + detectorType + "_descripter_" + descriptorType + ".txt";
     ofstream outputfile1(filename);
@@ -82,7 +88,7 @@ int main(int argc, const char *argv[])
         }
 
         // Debug
-        //cout << "dataBuffer size: " << dataBuffer.size() << endl;
+        cout << "dataBuffer size: " << dataBuffer.size() << endl;
         //cout << "dataBuffer capacity: " << dataBuffer.capacity() << endl;
 
         //// EOF STUDENT ASSIGNMENT
@@ -222,12 +228,16 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
-            //string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
-            //string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
-            string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
+            /* // Change the location of matcher parameters for efficiency
+            //string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
+            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            // Change the string name to avoid duplication
+            string descType = "DES_HOG"; // DES_BINARY, DES_HOG
+            //string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
+            //string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
             //string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+            */
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -238,7 +248,8 @@ int main(int argc, const char *argv[])
 
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, descType, matcherType, selectorType);
+                             //matches, descriptorType, matcherType, selectorType);
 
             //// EOF STUDENT ASSIGNMENT
 
@@ -270,6 +281,12 @@ int main(int argc, const char *argv[])
                 cv::imshow(windowName, matchImg);
                 cout << "Press key to continue to next image" << endl;
                 cv::waitKey(0); // wait for key to be pressed
+
+                // Task MP.7,8,9: Save image data to the file. One image for each combination is enough.
+                if (imgIndex == 1){
+                    string datafilename = "../result/detector_" + detectorType + "_descripter_" + descriptorType + "_image.jpg";
+                    cv::imwrite(datafilename, matchImg);
+                }
             }
             bVis = false;
         }

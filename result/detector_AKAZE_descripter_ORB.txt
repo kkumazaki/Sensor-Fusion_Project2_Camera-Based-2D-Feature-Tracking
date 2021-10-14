@@ -1,0 +1,58 @@
+-----imgIndex: 0
+time of detection: 115.215
+keypoints on the preceding vehicle: 162
+time of description: 3.31884
+-----imgIndex: 1
+time of detection: 107.965
+keypoints on the preceding vehicle: 157
+time of description: 3.61989
+time of matching: 0.809523
+Matched keypoints: 127
+-----imgIndex: 2
+time of detection: 110.881
+keypoints on the preceding vehicle: 159
+time of description: 3.94477
+time of matching: 0.819858
+Matched keypoints: 127
+-----imgIndex: 3
+time of detection: 107.291
+keypoints on the preceding vehicle: 154
+time of description: 2.35197
+time of matching: 0.783795
+Matched keypoints: 125
+-----imgIndex: 4
+time of detection: 110.185
+keypoints on the preceding vehicle: 162
+time of description: 2.40301
+time of matching: 0.780914
+Matched keypoints: 119
+-----imgIndex: 5
+time of detection: 107.999
+keypoints on the preceding vehicle: 163
+time of description: 2.96095
+time of matching: 0.824594
+Matched keypoints: 129
+-----imgIndex: 6
+time of detection: 106.597
+keypoints on the preceding vehicle: 173
+time of description: 3.28918
+time of matching: 0.814527
+Matched keypoints: 130
+-----imgIndex: 7
+time of detection: 107.208
+keypoints on the preceding vehicle: 175
+time of description: 3.09979
+time of matching: 0.963161
+Matched keypoints: 135
+-----imgIndex: 8
+time of detection: 106.998
+keypoints on the preceding vehicle: 175
+time of description: 3.02697
+time of matching: 0.919649
+Matched keypoints: 136
+-----imgIndex: 9
+time of detection: 108.723
+keypoints on the preceding vehicle: 175
+time of description: 3.89045
+time of matching: 0.911367
+Matched keypoints: 143
