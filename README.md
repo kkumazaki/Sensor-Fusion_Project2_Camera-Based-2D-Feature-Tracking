@@ -48,6 +48,7 @@ As my sixth task, I then implement the descriptor distance ratio test as a filte
 My seventh task is to count the number of keypoints on the preceding vehicle for all 10 images and take note of the distribution of their neighborhood size. Do this for all the detectors you have implemented.
 
 The the number of keypoints on the preceding vehicle for all 10 images is in the list "result/Project2_result.xlsx".
+<img src="result/TaskMP7_keypoints.png"/>
 
 FAST and AKAZE have mostly small neighborhood sizes, and the dispersion looks small.  
 BRISK and SIFT have small and large neighborhood sizes, and the dispersion looks large.  
@@ -62,6 +63,7 @@ My eighth task is to count the number of matched keypoints for all 10 images usi
 In the matching step, use the BF approach with the descriptor distance ratio set to 0.8.
 
 The result is in the list "result/Project2_result.xlsx".
+<img src="result/TaskMP8_matched_keypoints.png" />
 
 ### Task MP.9
 My ninth task is to log the time it takes for keypoint detection and descriptor extraction. 
@@ -69,6 +71,7 @@ The results must be entered into a spreadsheet and based on this information I t
 Finally, in a short text, I justify my recommendation based on my observations and on the data I collected.
 
 The result is in the list "result/Project2_result.xlsx".
+<img src="result/TaskMP9_log_time.png" />
 
 The time of ORB detector is short, but keypoints of ORB are not stable as I wrote in Task MP.7.
 Besides ORB, the TOP 3 fast methods are following.   
@@ -80,9 +83,11 @@ Besides ORB, the TOP 3 fast methods are following.
 (2) is a little slower than (1), but the standard deviation is much larger than (1) so it’s not good either.  
 
 ## Conclusion
-As a conclusion, (1)FAST detector & ORB descriptor is the best combination in this project images.  
+As a conclusion, "(1)FAST detector & ORB descriptor" is the best combination in this project images.  
 The matching image of this combination is shown below. It looks there’s no mismatch.  
 <img src="result/detector_FAST_descripter_ORB_image.jpg" />
+
+### Please refer to the [writeup material](Writeup_of_Project2.pdf).
 
 ## Rubric
 ### MP.0 Mid-Term Repor  
